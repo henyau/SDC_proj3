@@ -13,6 +13,7 @@ import cv2
 import os
 import csv
 import sklearn
+import tensorflow as tf
 
 from keras.models import Sequential
 from keras.layers import Lambda, Flatten, Dense, Conv2D, Dropout, Cropping2D
@@ -22,7 +23,7 @@ from sklearn.model_selection import train_test_split
 def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1: # Loop forever so the generator never terminates
-        shuffle(samples)
+        tf.random_shuffle(samples)
         for offset in range(0, num_samples, batch_size):
             batch_samples = samples[offset:offset+batch_size]
 
