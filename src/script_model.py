@@ -78,21 +78,14 @@ validation_generator = generator(validation_samples, batch_size=32)
 model = Sequential()
 model.add(Lambda(lambda x:(x/255.0)-0.5, input_shape = (160,320,3)))
 model.add(Cropping2D(cropping=((65,10), (0,0)))) #crop top of images
-##model.add(Conv2D(6,(5,5), activation='relu'))
-##model.add(Conv2D(6,(5,5), activation='relu'))
-##model.add(Conv2D(12,(3,3), activation='relu'))
-##model.add(Conv2D(12,(3,3), activation='relu'))
-##
-##model.add(Flatten())
-##model.add(Dense(100))
-##model.add(Dense(50))
-##model.add(Dense(10))
-##model.add(Dense(1)) #just get steering input
-
 model.add(Conv2D(6,(5,5), activation='relu'))
-model.add(Conv2D(8,(5,5), activation='relu'))
+model.add(Conv2D(6,(5,5), activation='relu'))
+model.add(Conv2D(12,(3,3), activation='relu'))
+model.add(Conv2D(12,(3,3), activation='relu'))
 
 model.add(Flatten())
+model.add(Dense(100))
+model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1)) #just get steering input
 
@@ -100,11 +93,9 @@ model.add(Dense(1)) #just get steering input
 model.compile(loss = 'mse', optimizer = 'adam')
 #model.fit(X_train, y_train, validation_split = 0.2, shuffle = True, epochs = 5)
 
-#use the generator instead
-# takes about 50ms to generate each batch,should be running number of unique samples/batch size or thereabouts
-# training samples is actually half of actual training set, since does not include the mirrors
-# will soon be only 1/4 because also need to include the other two cameras
-
+# use the generator instead
+# should be running number of unique samples/batch size or thereabouts
+# len(training_samples) is actually 1/4 training set, since does not include the mirrors or l and r images
 model.fit_generator(train_generator, samples_per_epoch= (int)(len(train_samples)/16), validation_data=validation_generator,nb_val_samples=(int) (len(validation_samples)/16), epochs=5)
 
 model.save('../models/model.h5')
