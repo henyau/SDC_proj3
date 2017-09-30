@@ -23,6 +23,8 @@ from sklearn.model_selection import train_test_split
 ## use a generator
 def generator(samples, batch_size=32):
     num_samples = len(samples)
+    steering_offset = 0.05
+    
     while 1: # Loop forever so the generator never terminates
         tf.random_shuffle(samples)
         for offset in range(0, num_samples, batch_size):
@@ -40,6 +42,20 @@ def generator(samples, batch_size=32):
                 #include a flipped shot
                 image_list.append(np.fliplr(center_image)) 
                 steering_angle_list.append(center_angle*-1.0)
+                
+                #left camera and right camera
+                name = '../data/IMG/'+batch_sample[1].split('/')[-1]
+                left_image = cv2.imread(name)
+             
+                image_list.append(left_image)
+                steering_angle_list.append(center_angle+steering_offset)
+                
+                name = '../data/IMG/'+batch_sample[2].split('/')[-1]
+                right_image = cv2.imread(name)
+        
+                image_list.append(right_image)
+                steering_angle_list.append(center_angle-steering_offset)
+                
                 
             X_train = np.array(image_list)
             y_train = np.array(steering_angle_list)
@@ -62,21 +78,33 @@ validation_generator = generator(validation_samples, batch_size=32)
 model = Sequential()
 model.add(Lambda(lambda x:(x/255.0)-0.5, input_shape = (160,320,3)))
 model.add(Cropping2D(cropping=((65,10), (0,0)))) #crop top of images
+##model.add(Conv2D(6,(5,5), activation='relu'))
+##model.add(Conv2D(6,(5,5), activation='relu'))
+##model.add(Conv2D(12,(3,3), activation='relu'))
+##model.add(Conv2D(12,(3,3), activation='relu'))
+##
+##model.add(Flatten())
+##model.add(Dense(100))
+##model.add(Dense(50))
+##model.add(Dense(10))
+##model.add(Dense(1)) #just get steering input
+
 model.add(Conv2D(6,(5,5), activation='relu'))
-model.add(Conv2D(6,(5,5), activation='relu'))
-model.add(Conv2D(12,(3,3), activation='relu'))
-model.add(Conv2D(12,(3,3), activation='relu'))
+model.add(Conv2D(8,(5,5), activation='relu'))
 
 model.add(Flatten())
-model.add(Dense(100))
-model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1)) #just get steering input
+
 
 model.compile(loss = 'mse', optimizer = 'adam')
 #model.fit(X_train, y_train, validation_split = 0.2, shuffle = True, epochs = 5)
 
 #use the generator instead
-model.fit_generator(train_generator, samples_per_epoch= len(train_samples), validation_data=validation_generator,nb_val_samples=len(validation_samples), epochs=5)
+# takes about 50ms to generate each batch,should be running number of unique samples/batch size or thereabouts
+# training samples is actually half of actual training set, since does not include the mirrors
+# will soon be only 1/4 because also need to include the other two cameras
+
+model.fit_generator(train_generator, samples_per_epoch= (int)(len(train_samples)/16), validation_data=validation_generator,nb_val_samples=(int) (len(validation_samples)/16), epochs=5)
 
 model.save('../models/model.h5')
