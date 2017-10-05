@@ -17,7 +17,7 @@ from keras.models import Sequential, load_model
 from keras.layers import Lambda, Flatten, Dense, Conv2D, Dropout, Cropping2D
 from sklearn.model_selection import train_test_split
 
-use_last_model_b = False
+use_last_model_b = False # reuse weight from previous run or start over
 
 def generator(samples, batch_size=32):
     """creates a Python generator which produces batches of input data"""
