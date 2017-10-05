@@ -42,6 +42,7 @@ To reduce overfitting, a dropout layer is applied inbetween the fully connected 
 
 The amount of training data is too much to fit into memory so a generator is used to produce batches of training and validation data. Keras has built in support for Python generators in the form of fit_generator(). For the number of steps per epoch, Keras documentation recommends using roughly the number of unique training samples divided by the batch size.
 
+An Adam optimizer is used, so there is no need to tune the learning gains.
 
 #### 2. Training process and training data
 

@@ -41,6 +41,7 @@ To reduce overfitting, a dropout layer is applied inbetween the fully connected 
 
 The amount of training data is too much to fit into memory so a generator is used to produce batches of training and validation data. Keras has built in support for Python generators in the form of fit_generator(). For the number of steps per epoch, Keras documentation recommends using roughly the number of unique training samples divided by the batch size.
 
+An Adam optimizer is used, so there is no need to tune the learning gains.
 
 #### 2. Training process and training data
 
@@ -55,3 +56,4 @@ Studying the images we can gather what information may be valuable to the model.
 We can also flip each image and multiply the steering input by -1 to double the number image-steering pairs. This results in a set of 42,030 unique image-steering pairs, 80% to be used in training and 20% to be used as validation. This flipping of images also contributes to avoiding the left turn bias.
 
 The training set is used to train the model, while the validation set is used to see if the model is overfitting the data. After 3 epochs the validation error was 0.0037 and after 4 epochs the validation error was 0.0036. Though the error was still decreasing, the learning was stopped at this point because the computational cost outweighed the potential gains. In addition overfitting would likely occur soon after.
+
