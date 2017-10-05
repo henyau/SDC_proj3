@@ -34,6 +34,7 @@ The initial image is 160x320 but during preprocessing is scaled by 0.5 to 80x160
 There are two sets of convolution layers with 5x5 kernels, first with four filters then with six filters. A third convolutional layer with a 3x3 kernel with 12 filters is then applied. The feature map is then flattened and is followed by three fully connected layers. After each layer, ReLu activation layers are used to introduce nonlinearities. The number of neurons in each fully connected layer are gradually reduced to a single output layer which corresponds to the predicted steering wheel angle.
 
 The model structure is illustrated below:
+
 ![alt text][image1]
 
 To reduce overfitting, a dropout layer is applied inbetween the fully connected layers after flattening. In addition, the entire dataset is shuffled and split into training and validation sets. 
@@ -44,6 +45,7 @@ The amount of training data is too much to fit into memory so a generator is use
 #### 2. Training process and training data
 
 The training data comes from a set of three forward facing virtual cameras and the recorded steering angle. The vehicle was driven around the track once in each direction trying to remain in the center as much as possible. By driving in both directions, we avoid embedding an inherent left turn bias as the track is generally driven counter-clockwise. A few additional attempts moving from the side of the track to the center were also recorded which were intended to teach the model how to recover. The training images for the left, center, and right cameras are shown below:
+
 ![alt text][image2]
 
 These images are from when the vehicle is roughly in the center of the road which is the desired behavior. The center of the road is shown with a green line. This line is in the middle of the center camera but is offset in the left and right cameras. The center of the left camera image is shown with a yellow line and that of the right camera is shown with a red line. Interpreting each image as if it were taken from a vehicle centered at the camera center, we can see how using the left and right images can be used to triple the amount of training data. For example, taking the left image, we see that to get to the true center of the lane shown in green, we must steer right. The amount required to turn can be computed by first training the model using only the center camera images, then feeding the left and right images as inputs to the trained model generating the predicted steering for each side. Subtracting the actual steering input we find the offset required for each side. This offset is approximatedly +0.04 for the left camera and -0.04 for the right camera. So we can triple the set of image-steering pairs from from 7005 to 21015.

@@ -34,6 +34,8 @@ The initial image is 160x320 but during preprocessing is scaled by 0.5 to 80x160
 There are two sets of convolution layers with 5x5 kernels, first with four filters then with six filters. A third convolutional layer with a 3x3 kernel with 12 filters is then applied. The feature map is then flattened and is followed by three fully connected layers. After each layer, ReLu activation layers are used to introduce nonlinearities. The number of neurons in each fully connected layer are gradually reduced to a single output layer which corresponds to the predicted steering wheel angle.
 
 The model structure is illustrated below:
+
+
 ![alt text][image1]
 
 To reduce overfitting, a dropout layer is applied inbetween the fully connected layers after flattening. In addition, the entire dataset is shuffled and split into training and validation sets. 
